@@ -1,0 +1,13 @@
+services:
+  mysql:
+    image: mysql
+    ports: 
+      - 3306:3306
+    volumes:
+      - ~/apps/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_USER=scrumpoker
+      - MYSQL_DATABASE=database
+    container_name: scrumpoker_db
