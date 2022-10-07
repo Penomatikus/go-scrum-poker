@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/labstack/echo/v4"
-	"github.com/penomatikus/go-scrum-poker/server/db"
+	"github.com/penomatikus/go-scrum-poker/server/database"
 	"github.com/penomatikus/go-scrum-poker/server/restful"
 )
 
@@ -16,8 +16,10 @@ type appConfig struct {
 // NewAppConfig provides a context with the app's db connection
 func newAppConfig() *appConfig {
 	ctx := context.Background()
-	key := db.DatabaseCtxKey
-	db := db.ProvideDatabase()
+	key := database.DatabaseCtxKey
+	db := database.ProvideDatabase()
+
+	// sqlxRepo := adapter.ProvideSqlxRepositoryAdapter(&sql.DB{})
 
 	return &appConfig{
 		Context:    context.WithValue(ctx, key, db),
