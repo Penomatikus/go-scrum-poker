@@ -1,8 +1,10 @@
 package adapter
 
 import (
-	"database/sql"
+	"context"
+	"fmt"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/penomatikus/go-scrum-poker/internal/room/entity"
 	"github.com/penomatikus/go-scrum-poker/server/database"
 )
@@ -12,27 +14,34 @@ var _ database.Adapter = &SqlxRepositoryAdapter{}
 
 type SqlxRepositoryAdapter struct {
 	database.Adapter
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func (sqlxA *SqlxRepositoryAdapter) Create(request entity.RoomCreateRequest) (*entity.Room, error) {
+func (repo *SqlxRepositoryAdapter) Create(request entity.RoomCreateRequest) (*entity.Room, error) {
 	return nil, nil
 }
 
-func (sqlxA *SqlxRepositoryAdapter) Update(request entity.RoomUpdateRequest) error {
+func (repo *SqlxRepositoryAdapter) Update(request entity.RoomUpdateRequest) error {
 	return nil
 }
 
-func (sqlxA *SqlxRepositoryAdapter) Delete(token entity.RoomToken) error {
+func (repo *SqlxRepositoryAdapter) Delete(token entity.RoomToken) error {
 	return nil
 }
 
-func (sqlxA *SqlxRepositoryAdapter) migrateSchema() error {
+func (adapter *SqlxRepositoryAdapter) migrateSchema() error {
 	return nil
 }
 
-func ProvideSqlxRepositoryAdapter(db *sql.DB) entity.RoomRepository {
-	repositoryAdapter := &SqlxRepositoryAdapter{db: db}
+func (adapter *SqlxRepositoryAdapter) mustGetDB(ctx context.Context) *sqlx.DB {
+	if db := ctx.Value(database.DatabaseCtxKey).(*sqlx.DB); db != nil {
+		return db
+	}
+	panic(fmt.Errorf("no DB instance was found during transaktion"))
+}
+
+func ProvideSqlxRepositoryAdapter(orm *database.ORM) entity.RoomRepository {
+	repositoryAdapter := &SqlxRepositoryAdapter{db: orm.DB.(*sqlx.DB)}
 	if err := repositoryAdapter.migrateSchema(); err != nil {
 		panic("Error!")
 	}

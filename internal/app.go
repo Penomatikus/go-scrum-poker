@@ -13,16 +13,22 @@ type appConfig struct {
 	httpServer *echo.Echo
 }
 
-// NewAppConfig provides a context with the app's db connection
+// NewAppConfig provides a context with the app's db connection. When no DB connection could be established
+// the app will panic and die.
 func newAppConfig() *appConfig {
+	//TODO: make this configurable
+	dataSourceName := "scrumpoker:password@tcp(localhost:3306)/database?charset=utf8&parseTime=True&loc=Local"
+
 	ctx := context.Background()
 	key := database.DatabaseCtxKey
-	db := database.ProvideDatabase()
+	orm, err := database.ProvideORM(database.SQLX, dataSourceName)
 
-	// sqlxRepo := adapter.ProvideSqlxRepositoryAdapter(&sql.DB{})
+	if err != nil {
+		panic(err)
+	}
 
 	return &appConfig{
-		Context:    context.WithValue(ctx, key, db),
+		Context:    context.WithValue(ctx, key, orm),
 		httpServer: restful.ProvideEchoServer(),
 	}
 }
