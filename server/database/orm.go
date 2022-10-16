@@ -40,7 +40,7 @@ func provideORM(ormTyp ORMType, dataSourceName string) (o *ORM, err error) {
 	case Gorm:
 		o.DB, err = gorm.Open(mysql.Open(dataSourceName), &gorm.Config{})
 	default:
-		panic("unsupported data")
+		panic("unsupported ORM")
 	}
 
 	return
