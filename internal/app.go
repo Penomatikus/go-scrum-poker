@@ -21,7 +21,7 @@ func newAppConfig() *appConfig {
 
 	ctx := context.Background()
 	key := database.DatabaseCtxKey
-	orm, err := database.ProvideORM(database.SQLX, dataSourceName)
+	orm, err := database.ProvideORM(database.SQLX, database.DialectPostgres, dataSourceName)
 
 	if err != nil {
 		panic(err)
