@@ -50,11 +50,11 @@ func provideORM(ormType ORMType, dialect DatabaseDialect, dsn string) (o *ORM, e
 
 func provideGormDialector(dialect DatabaseDialect, dsn string) gorm.Dialector {
 	switch dialect {
-	case MysqlDialect:
+	case DialectMysql:
 		return mysql.Open(dsn)
-	case PostgresDialect:
+	case DialectPostgres:
 		return postgres.Open(dsn)
-	case Sqlite3Dialect:
+	case DialectSqlite3:
 		return sqlite.Open(dsn)
 	default:
 		panic("unsported gorm dialect")

@@ -1,14 +1,14 @@
 package entity
 
 type Room struct {
-	Token       string `db:"token"`
+	Token       int64  `db:"token"`
 	Name        string `db:"name"`
 	Description string `db:"description"`
 }
 
 var Schema = `
 	CREATE TABLE room (
-		token 		text,
+		token 		bigint,
 		name 		text,
 		description text
 	);
