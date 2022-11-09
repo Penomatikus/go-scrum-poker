@@ -25,13 +25,13 @@ func Test_Create(t *testing.T) {
 	})
 
 	var roomDB Room
-	assert.Nil(t, ts.db.Get(&roomDB, "SELECT * FROM room"))
+	ts.db.Get(&roomDB, "SELECT * FROM room")
+	assert.Equal(t, room, &roomDB)
 	fmt.Printf("\n%#v\n", roomDB)
 }
 
 type repositoryTestSetup struct {
 	db   *sqlx.DB
-	ctx  context.Context
 	repo RoomRepository
 }
 
@@ -40,13 +40,8 @@ func prepareRepoTestSetup(t *testing.T) *repositoryTestSetup {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	ctx := context.Background()
-	repo := ProvideRoomRepository(db)
-
 	return &repositoryTestSetup{
 		db:   db,
-		ctx:  ctx,
-		repo: repo,
+		repo: ProvideRoomRepository(db),
 	}
 }
