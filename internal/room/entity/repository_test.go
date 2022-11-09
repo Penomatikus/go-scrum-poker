@@ -7,7 +7,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/penomatikus/go-scrum-poker/server/database"
 	"github.com/penomatikus/go-scrum-poker/server/database/txtest"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,10 +30,9 @@ func Test_Create(t *testing.T) {
 }
 
 type repositoryTestSetup struct {
-	db        *sqlx.DB
-	ctx       context.Context
-	txManager database.TransactionManger
-	repo      RoomRepository
+	db   *sqlx.DB
+	ctx  context.Context
+	repo RoomRepository
 }
 
 func prepareRepoTestSetup(t *testing.T) *repositoryTestSetup {
@@ -44,13 +42,11 @@ func prepareRepoTestSetup(t *testing.T) *repositoryTestSetup {
 	}
 
 	ctx := context.Background()
-	txManager := database.ProvideTransactionManger(db)
 	repo := ProvideRoomRepository(db)
 
 	return &repositoryTestSetup{
-		db:        db,
-		ctx:       ctx,
-		txManager: txManager,
-		repo:      repo,
+		db:   db,
+		ctx:  ctx,
+		repo: repo,
 	}
 }
