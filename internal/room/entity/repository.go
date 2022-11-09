@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/penomatikus/go-scrum-poker/server/database"
 )
 
 type RoomToken string
@@ -21,12 +22,11 @@ type repoImpl struct {
 var _ RoomRepository = &repoImpl{}
 
 func (repo *repoImpl) Create(ctx context.Context, room *Room) error {
-	tx := repo.db.MustBegin()
-	tx.NamedExecContext(ctx, `
-		INSERT INTO room (token, name, description) 
-		VALUES (:token, :name, :description)
+	_, err := database.MustHaveTx(ctx).NamedExecContext(ctx, `
+			INSERT INTO room (token, name, description) 
+			VALUES (:token, :name, :description)
 		`, room)
-	return tx.Commit()
+	return err
 }
 
 func (repo *repoImpl) Update(ctx context.Context, room Room) error {

@@ -7,6 +7,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/penomatikus/go-scrum-poker/server/database"
+	"github.com/penomatikus/go-scrum-poker/server/database/txtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,30 +20,37 @@ func Test_Create(t *testing.T) {
 		Name:        "Test",
 		Description: "This is a description",
 	}
-	assert.Nil(t, ts.repo.Create(ts.ctx, room))
+
+	txtest.AutoCommit(t, ts.db, func(ctx context.Context) error {
+		return ts.repo.Create(ctx, room)
+	})
 
 	var roomDB Room
 	assert.Nil(t, ts.db.Get(&roomDB, "SELECT * FROM room"))
 	fmt.Printf("\n%#v\n", roomDB)
 }
 
-type sqlxRepositoryTestSetup struct {
-	db   *sqlx.DB
-	ctx  context.Context
-	repo RoomRepository
+type repositoryTestSetup struct {
+	db        *sqlx.DB
+	ctx       context.Context
+	txManager database.TransactionManger
+	repo      RoomRepository
 }
 
-func prepareRepoTestSetup(t *testing.T) *sqlxRepositoryTestSetup {
+func prepareRepoTestSetup(t *testing.T) *repositoryTestSetup {
 	db, err := sqlx.Open("sqlite3", ":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	ctx := context.Background()
+	txManager := database.ProvideTransactionManger(db)
 	repo := ProvideRoomRepository(db)
-	return &sqlxRepositoryTestSetup{
-		db:   db,
-		ctx:  ctx,
-		repo: repo,
+
+	return &repositoryTestSetup{
+		db:        db,
+		ctx:       ctx,
+		txManager: txManager,
+		repo:      repo,
 	}
 }

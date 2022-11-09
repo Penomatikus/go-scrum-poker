@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/penomatikus/go-scrum-poker/server/database"
 )
 
 type ParticipantRepository interface {
@@ -17,9 +18,8 @@ type repoImpl struct {
 var _ ParticipantRepository = &repoImpl{}
 
 func (repo *repoImpl) Create(ctx context.Context, participant *Participant) error {
-	tx := repo.db.MustBegin()
-	tx.NamedExecContext(ctx, ``, participant)
-	return tx.Commit()
+	_, err := database.MustHaveTx(ctx).NamedExecContext(ctx, ``, participant)
+	return err
 }
 
 func ProvideParticipantRpository(db *sqlx.DB) ParticipantRepository {

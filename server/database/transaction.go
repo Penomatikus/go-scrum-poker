@@ -43,6 +43,14 @@ func (tm *tmImpl) WithTransaction(ctx context.Context, fn TxFn) (err error) {
 	return
 }
 
+func MustHaveTx(ctx context.Context) (tx *sqlx.Tx) {
+	tx, ok := ctx.Value(TransaktionCtxKey).(*sqlx.Tx)
+	if !ok {
+		panic("No running transaction!")
+	}
+	return tx
+}
+
 type transaction string
 
 const TransaktionCtxKey transaction = "TX_Key"
